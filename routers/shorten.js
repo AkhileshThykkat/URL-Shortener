@@ -1,9 +1,15 @@
 const authenticateJWT = require("../middlewares/checkToken");
+const { validateCreateShortUrl } = require("../validators/url");
+const { url_controller } = require("../controllers");
 
 const router = require("express").Router();
 
-router.get("/shorten", authenticateJWT, (req, res) => {
-  res.send("Shorten URL");
-});
+router.post(
+  "/api/shorten",
+  authenticateJWT,
+  validateCreateShortUrl,
+  url_controller.shortenUrl
+);
 
+router.get("/api/shorten/:alias", authenticateJWT, url_controller.redirectUrl);
 module.exports = router;

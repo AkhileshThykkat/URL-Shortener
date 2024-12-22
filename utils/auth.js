@@ -7,7 +7,7 @@ const envVariables = require("./env_loader");
 passport.use(
   new GoogleStrategy(
     {
-      clientID: envVariables.CLIENT_ID,
+      clientID: envVariables.GOOGLE_CLIENT_ID,
       clientSecret: envVariables.GOOGLE_CLIENT_SECRET,
       callbackURL: envVariables.GOOGLE_CALLBACK_URL,
     },
