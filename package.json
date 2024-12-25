@@ -4,9 +4,9 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "sync": "node db_sync.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "sync": "node src/db_sync.js"
   },
   "author": "Akhilesh M T",
   "license": "ISC",

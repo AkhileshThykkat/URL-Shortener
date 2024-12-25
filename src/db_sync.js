@@ -3,7 +3,7 @@ const {
   User,
   URL,
   ClickEvent,
-  // DailyStat,
+  DailyStat,
   OsStat,
   DeviceStat,
 } = require("./models");
