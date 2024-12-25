@@ -11,5 +11,5 @@ router.post(
   url_controller.shortenUrl
 );
 
-router.get("/api/shorten/:alias", authenticateJWT, url_controller.redirectUrl);
+router.get("/api/shorten/:alias", url_controller.redirectUrl);
 module.exports = router;

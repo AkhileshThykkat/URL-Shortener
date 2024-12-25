@@ -11,6 +11,7 @@ app.use(passport.initialize());
 
 app.use(require("./routers/auth"));
 app.use(require("./routers/shorten"));
+app.use(require("./routers/analytics"));
 
 app.listen(envVariables.PORT, () => {
   console.log(`Server running on port ${envVariables.PORT}`);

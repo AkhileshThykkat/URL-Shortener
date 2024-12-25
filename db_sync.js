@@ -2,8 +2,10 @@ const {
   sequelize,
   User,
   URL,
-  ClickAnalytics,
-  UserAnalytics,
+  ClickEvent,
+  // DailyStat,
+  OsStat,
+  DeviceStat,
 } = require("./models");
 
 (async () => {

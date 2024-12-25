@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const envVariables = require("../utils/env_loader");
-const authenticateJWT = (req, res, next) => {
+const authenticateJWT = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
