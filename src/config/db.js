@@ -10,6 +10,12 @@ const sequelize = new Sequelize(
     host: envVariables.DB_HOST,
     dialect: "postgres", // Change this to your preferred DBMS (e.g., mysql, sqlite)
     logging: false, // Disable logging for cleaner output
+    dialectOptions: {
+      ssl: {
+        require: true, // Force SSL
+        rejectUnauthorized: false, // Disable strict certificate validation
+      },
+    },
   }
 );
 
