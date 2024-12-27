@@ -6,6 +6,9 @@ info:
 
 servers:
   - url: http://localhost:3000
+    description: Local server
+  - url: https://url-shortener-c3rj.onrender.com
+    description: Hosted server for demo
 components:
   securitySchemes:
     BearerAuth:
