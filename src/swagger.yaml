@@ -1,0 +1,326 @@
+openapi: 3.0.0
+info:
+  title: UrlShortner API Documentation
+  version: 1.0.0
+  description: API documentation for the url shortner api app by Akhilesh m t.
+
+servers:
+  - url: http://localhost:3000
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
+paths:
+  /auth/google/login:
+    get:
+      summary: Initiates Google OAuth login
+      tags:
+        - Authentication
+      responses:
+        "302":
+          description: Redirects the user to Google's OAuth 2.0 login page.
+        "500":
+          description: Internal server error.
+
+  /auth/google/callback:
+    get:
+      summary: Handles Google OAuth callback
+      tags:
+        - Authentication
+      responses:
+        "200":
+          description: Returns a JWT token upon successful login.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token for the authenticated user.
+                  type:
+                    type: string
+                    description: Token type (Bearer).
+        "401":
+          description: Unauthorized, user not authenticated.
+        "500":
+          description: Internal server error.
+
+  /api/shorten:
+    post:
+      summary: Create a new short URL to facilitate easy sharing of long URLs.
+      tags:
+        - URL Shortener
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                longUrl:
+                  type: string
+                  description: The original URL to be shortened.
+                customAlias:
+                  type: string
+                  description: Custom alias for the shortened URL (optional).
+                topic:
+                  type: string
+                  description: Category under which the URL is grouped (optional).
+      responses:
+        "200":
+          description: Successfully created a short URL.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shortUrl:
+                    type: string
+                    description: The generated short URL.
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Timestamp of when the short URL was created.
+        "400":
+          description: Bad request, validation error.
+        "401":
+          description: Unauthorized, user not authenticated.
+        "500":
+          description: Internal server error.
+
+  /api/shorten/{alias}:
+    get:
+      summary: Redirect to the original URL using the alias.
+      tags:
+        - URL Shortener
+      parameters:
+        - name: alias
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Alias for the shortened URL.
+      responses:
+        "302":
+          description: Redirects to the original URL.
+        "404":
+          description: Alias not found.
+        "500":
+          description: Internal server error.
+
+  /api/analytics/{alias}:
+    get:
+      summary: Retrieve detailed analytics for a specific short URL.
+      tags:
+        - Analytics
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: alias
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Alias for the shortened URL.
+      responses:
+        "200":
+          description: Successfully fetched analytics for the alias.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalClicks:
+                    type: integer
+                    description: Total number of times the short URL has been accessed.
+                  uniqueUsers:
+                    type: integer
+                    description: Number of unique users who accessed the short URL.
+                  clicksByDate:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                          description: Date of the click count.
+                        clickCount:
+                          type: integer
+                          description: Number of clicks on that date.
+                  osType:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        osName:
+                          type: string
+                          description: Name of the operating system (e.g., Windows, macOS).
+                        uniqueClicks:
+                          type: integer
+                          description: Unique clicks for that OS.
+                        uniqueUsers:
+                          type: integer
+                          description: Unique users for that OS.
+                  deviceType:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        deviceName:
+                          type: string
+                          description: Type of device (e.g., mobile, desktop).
+                        uniqueClicks:
+                          type: integer
+                          description: Unique clicks for that device.
+                        uniqueUsers:
+                          type: integer
+                          description: Unique users for that device.
+        "401":
+          description: Unauthorized, user not authenticated.
+        "404":
+          description: Alias not found.
+        "500":
+          description: Internal server error.
+
+  /api/analytics/topic/{topic}:
+    get:
+      summary: Retrieve analytics for all short URLs grouped by a topic.
+      tags:
+        - Analytics
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: topic
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Topic under which analytics is requested.
+      responses:
+        "200":
+          description: Successfully fetched analytics for the topic.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalClicks:
+                    type: integer
+                    description: Total number of clicks across all URLs in the topic.
+                  uniqueUsers:
+                    type: integer
+                    description: Number of unique users in the topic.
+                  clicksByDate:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                          description: Date of the click count.
+                        totalClickCount:
+                          type: integer
+                          description: Total click count for the topic on that date.
+                  urls:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        shortUrl:
+                          type: string
+                          description: The generated short URL.
+                        totalClicks:
+                          type: integer
+                          description: Total number of clicks.
+                        uniqueUsers:
+                          type: integer
+                          description: Number of unique users.
+        "401":
+          description: Unauthorized, user not authenticated.
+        "404":
+          description: Topic not found.
+        "500":
+          description: Internal server error.
+
+  /api/analytics/overall:
+    get:
+      summary: Retrieve overall analytics for all short URLs created by the authenticated user.
+      tags:
+        - Analytics
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Successfully fetched overall analytics for the user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalUrls:
+                    type: integer
+                    description: Total number of short URLs created by the user.
+                  totalClicks:
+                    type: integer
+                    description: Total number of clicks across all URLs.
+                  uniqueUsers:
+                    type: integer
+                    description: Number of unique users who accessed any of the user's short URLs.
+                  clicksByDate:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                          description: Date of the click count.
+                        totalClickCount:
+                          type: integer
+                          description: Total clicks for the user on that date.
+                  osType:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        osName:
+                          type: string
+                          description: Name of the operating system (e.g., Windows, macOS).
+                        uniqueClicks:
+                          type: integer
+                          description: Unique clicks for that OS.
+                        uniqueUsers:
+                          type: integer
+                          description: Unique users for that OS.
+                  deviceType:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        deviceName:
+                          type: string
+                          description: Type of device (e.g., mobile, desktop).
+                        uniqueClicks:
+                          type: integer
+                          description: Unique clicks for that device type.
+                        uniqueUsers:
+                          type: integer
+                          description: Unique users for that device type.
+        "401":
+          description: Unauthorized, user not authenticated.
+        "500":
+          description: Internal server error.
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

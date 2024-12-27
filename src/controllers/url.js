@@ -9,6 +9,7 @@ const {
 } = require("../services");
 const { urlTracking } = require("../utils/lib");
 const redisCache = require("../utils/redisCache");
+const envVariables = require("../utils/env_loader");
 
 async function shortenUrl(req, res) {
   const user = req.user;
@@ -36,7 +37,7 @@ async function shortenUrl(req, res) {
   });
   if (shortUrl) {
     return res.status(201).send({
-      shortUrl: `http://localhost:3000/api/shorten/${alias}`,
+      shortUrl: `${envVariables.API_BASE_URL}/api/shorten/${alias}`,
       createdAt: shortUrl.createdAt,
     });
   }

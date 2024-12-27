@@ -11,6 +11,7 @@ const {
 } = require("../models");
 const { getLast7Days } = require("../utils/lib");
 const redisClient = require("../utils/redisCache");
+const envVariables = require("../utils/env_loader");
 
 async function getOverallAnalytics(userId) {
   try {
@@ -241,7 +242,7 @@ async function analyticsByTopic(req, res) {
         });
 
         return {
-          shortUrl: url.shortUrl,
+          shortUrl: `${envVariables.API_BASE_URL}/${url.customAlias}`,
           totalClicks: urlTotalClicks,
           uniqueUsers: urlUniqueUsers,
         };
@@ -265,7 +266,7 @@ async function analyticsByTopic(req, res) {
       urls: urlsData,
     };
 
-    await redisClient.set(cacheKey, JSON.stringify(analytics), "EX", 3600);
+    await redisClient.set(cacheKey, JSON.stringify(analytics));
 
     // Return the response in the required format
     return res.json(analytics);
