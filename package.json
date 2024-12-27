@@ -8,6 +8,7 @@
     "dev": "nodemon src/index.js",
     "sync": "node src/db_sync.js"
   },
+  
   "author": "Akhilesh M T",
   "license": "ISC",
   "description": "",
