@@ -1,0 +1,201 @@
+openapi: 3.0.0
+info:
+  title: Express API Documentation
+  version: 1.0.0
+  description: API documentation for the Express app.
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /auth/google/login:
+      get:
+        summary: Initiates Google OAuth login
+        tags:
+          - Authentication
+        responses:
+          "302":
+            description: Redirects the user to Google's OAuth 2.0 login page.
+          "500":
+            description: Internal server error.
+
+  /auth/google/callback:
+    get:
+      summary: Handles Google OAuth callback
+      tags:
+        - Authentication
+      responses:
+        "200":
+          description: Returns a JWT token upon successful login.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token for the authenticated user.
+                  type:
+                    type: string
+                    description: Token type (Bearer).
+        "401":
+          description: Unauthorized, user not authenticated.
+        "500":
+          description: Internal server error.
+  /api/shorten:
+    post:
+      summary: Shorten a URL
+      tags:
+        - URL Shortener
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The URL to be shortened.
+                alias:
+                  type: string
+                  description: Custom alias for the shortened URL (optional).
+      responses:
+        "200":
+          description: Successfully shortened the URL.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alias:
+                    type: string
+                    description: Alias for the shortened URL.
+                  url:
+                    type: string
+                    description: The original URL.
+        "400":
+          description: Bad request, validation error.
+        "401":
+          description: Unauthorized, user not authenticated.
+        "500":
+          description: Internal server error.
+
+  /api/shorten/{alias}:
+    get:
+      summary: Redirect to the original URL using the alias
+      tags:
+        - URL Shortener
+      parameters:
+        - name: alias
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Alias for the shortened URL.
+      responses:
+        "302":
+          description: Redirects to the original URL.
+        "404":
+          description: Not found, alias does not exist.
+        "500":
+          description: Internal server error.
+
+  /api/analytics/overall:
+    get:
+      summary: Fetch overall analytics
+      tags:
+        - Analytics
+      responses:
+        "200":
+          description: Successfully fetched overall analytics.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalClicks:
+                    type: integer
+                    description: Total number of clicks.
+                  totalUrls:
+                    type: integer
+                    description: Total number of shortened URLs.
+        "401":
+          description: Unauthorized, user not authenticated.
+        "500":
+          description: Internal server error.
+
+  /api/analytics/{alias}:
+    get:
+      summary: Fetch analytics for a specific alias
+      tags:
+        - Analytics
+      parameters:
+        - name: alias
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Alias for which analytics is requested.
+      responses:
+        "200":
+          description: Successfully fetched analytics for the alias.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clicks:
+                    type: integer
+                    description: Number of clicks for the alias.
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: When the alias was created.
+        "401":
+          description: Unauthorized, user not authenticated.
+        "404":
+          description: Not found, alias does not exist.
+        "500":
+          description: Internal server error.
+
+  /api/analytics/topic/{topic}:
+    get:
+      summary: Fetch analytics by topic
+      tags:
+        - Analytics
+      parameters:
+        - name: topic
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Topic for which analytics is requested.
+      responses:
+        "200":
+          description: Successfully fetched analytics for the topic.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalClicks:
+                    type: integer
+                    description: Total number of clicks for the topic.
+                  urls:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        alias:
+                          type: string
+                          description: Alias for the shortened URL.
+                        clicks:
+                          type: integer
+                          description: Number of clicks for the alias.
+        "401":
+          description: Unauthorized, user not authenticated.
+        "404":
+          description: Not found, topic does not exist.
+        "500":
+          description: Internal server error.
