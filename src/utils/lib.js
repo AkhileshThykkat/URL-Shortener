@@ -1,5 +1,5 @@
 const hash = require("crypto").createHash("sha256");
-
+const moment = require("moment");
 function generateRandomAlias() {
   return Math.random().toString(36).substring(2, 8);
 }
@@ -42,6 +42,14 @@ function generateVisitorId(ip_address, userAgent) {
   return hash.digest("hex");
 }
 
+const getLast7Days = () => {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    days.push(moment().subtract(i, "days").format("YYYY-MM-DD"));
+  }
+  return days;
+};
+
 const urlTracking = {
   detectDevice,
   detectOS,
@@ -50,4 +58,5 @@ const urlTracking = {
 module.exports = {
   urlTracking,
   generateRandomAlias,
+  getLast7Days,
 };

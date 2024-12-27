@@ -23,11 +23,11 @@ const OsStat = sequelize.define(
     },
     uniqueClicks: {
       type: DataTypes.INTEGER,
-      defaultValue: 0,
+      defaultValue: 1,
     },
     uniqueUsers: {
       type: DataTypes.INTEGER,
-      defaultValue: 0,
+      defaultValue: 1,
     },
     totalCount: {
       type: DataTypes.INTEGER,

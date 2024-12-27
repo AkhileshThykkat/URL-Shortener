@@ -16,3 +16,6 @@ app.use(require("./routers/analytics"));
 app.listen(envVariables.PORT, () => {
   console.log(`Server running on port ${envVariables.PORT}`);
 });
+
+// const serverless = require("serverless-http");
+// module.exports.handler = serverless(app);

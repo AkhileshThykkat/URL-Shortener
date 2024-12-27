@@ -30,6 +30,7 @@ async function findUserByEmail(email) {
     }
     return null;
   } catch (error) {
+    console.log("Error finding user by email: ", error);
     throw new Error("Error finding user by email: " + error.message);
   }
 }

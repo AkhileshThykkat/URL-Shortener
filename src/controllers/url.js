@@ -8,6 +8,7 @@ const {
   osStat_service,
 } = require("../services");
 const { urlTracking } = require("../utils/lib");
+const redisCache = require("../utils/redisCache");
 
 async function shortenUrl(req, res) {
   const user = req.user;
@@ -44,15 +45,25 @@ async function shortenUrl(req, res) {
 
 async function redirectUrl(req, res) {
   // const user = req.user;
+  // add cache layer for the long url with the alias
+
   const userAgent = req.headers["user-agent"];
   const ip_address = req.ip;
   const referer = req.headers["referer"] || null;
 
   const alias = req.params.alias;
-  const url = await url_service.findByAlias(alias);
+
+  // Check cache first
+  let url = await redisCache.get(alias);
   if (!url) {
-    return res.status(404).send("URL not found");
+    url = await url_service.findByAlias(alias);
+    if (!url) {
+      return res.status(404).send("URL not found");
+    }
+    // Save to cache
+    await redisCache.set(alias, url);
   }
+
   const deviceType = urlTracking.detectDevice(userAgent);
   const osType = urlTracking.detectOS(userAgent);
   const visitorId = urlTracking.generateVisitorId(ip_address, userAgent);
@@ -129,6 +140,13 @@ async function redirectUrl(req, res) {
   });
 
   await url_service.incrementClickCount(url.id);
+  // remove the cache for the url for daily stat, os stat, device stat
+  const cacheKeys = [
+    `analyticsByTopic:${url.topic}`,
+    `analyticsByAlias:${url.customAlias}`,
+    `analyticsOverall:${url.userId}`,
+  ];
+  await redisCache.remove([...cacheKeys]);
   return res.redirect(302, url.longUrl);
 }
 

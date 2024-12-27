@@ -21,7 +21,7 @@ const isUniqueClick = async (urlId, visitorId) => {
     throw error;
   }
 };
-clickEvent_service = {
+const clickEvent_service = {
   createClickEvent,
   isUniqueClick,
 };

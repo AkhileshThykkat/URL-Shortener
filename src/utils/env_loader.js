@@ -15,6 +15,7 @@ const envVariables = {
   DB_USER: process.env.DB_USER,
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_HOST: process.env.DB_HOST,
+  REDIS_URL: process.env.REDIS_URL,
 };
 
 // envVariables contains all the environment variables required for the application.
